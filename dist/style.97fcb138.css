@@ -2,10 +2,24 @@ body {
   background: white;
 }
 
+#menuTarget {
+  display: flex;
+  flex-direction: row;
+}
+#menuTarget .active {
+  border: 1px solid red;
+}
+
 .content {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+.content #menu .menu {
+  cursor: pointer;
+}
+.content #menu .active {
+  border: 1px solid red;
 }
 
 /*# sourceMappingURL=/style.97fcb138.css.map */

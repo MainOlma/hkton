@@ -1,12 +1,21 @@
 body{
   background: white;
 }
-
+#menuTarget{
+  display: flex;
+  flex-direction: row;
+  .active{border: 1px solid red}
+}
 .content{
   display: flex;
   flex-direction: row;
   align-items: center;
+
   #menu{
+    .menu{
+      cursor: pointer;
+    }
+    .active{border: 1px solid red}
 
   }
   #root{

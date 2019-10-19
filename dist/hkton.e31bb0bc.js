@@ -28770,8 +28770,17 @@ var mini_colscale = d3.scaleLinear().domain([0, 18]).range([0, mini_w]);
 var color = d3.scaleSequential(d3.interpolateGreens).domain([0, 2000]);
 
 function getColor(value, max) {
-  console.log("getcolor of ", value);
   var color = d3.scaleSequential(d3.interpolateGreens).domain([0, max]);
+  value = Number.isNaN(value) ? 0 : value;
+  debugger;
+  return color(value);
+}
+
+function getColorField(value, max, min) {
+  /*const color = d3.scaleSequential(d3.interpolateGreens)
+      .domain([0, max]);*/
+  var color = d3.scaleLinear().domain([min, 0, max]).range(["red", "white", "green"]).clamp(true).interpolate(d3.interpolateHcl);
+  value = Number.isNaN(value) ? 0 : value;
   return color(value);
 }
 
@@ -28818,11 +28827,19 @@ function drawMap(countryData) {
   });*/
 }
 
-function updateMap(subjects_data, map_data, service_type) {
-  var targetField = 'value_cost';
+function updateMap(subjects_data, map_data) {
+  var selectedType = d3.select('.menu.active').attr("data-type");
+  var selectedField = d3.select('.menuTarget.active').attr("data-target");
+  var targetField = selectedField;
   var t = d3.transition().duration(750);
   var t2 = d3.transition().duration(750 / 2);
+  var service_type = selectedType;
   var max = d3.max(subjects_data.filter(function (d) {
+    return d.service_type == service_type;
+  }).map(function (d) {
+    return +d[targetField];
+  }));
+  var min = d3.min(subjects_data.filter(function (d) {
     return d.service_type == service_type;
   }).map(function (d) {
     return +d[targetField];
@@ -28850,7 +28867,7 @@ function updateMap(subjects_data, map_data, service_type) {
   }));
   rects.exit().attr("class", "exit sub").transition(t).remove();
   rects.attr("class", "update sub").transition(t).style("fill", function (d) {
-    return getColor(+d.value, max);
+    if (selectedField == "value_cost") return getColor(+d.value, max);else return getColorField(+d.value, max, min);
   });
   var texts = mainSvg.selectAll("text.value").data(map_data.map(function (d) {
     var tmp = subjects_data.find(function (e) {
@@ -28877,7 +28894,7 @@ function updateMap(subjects_data, map_data, service_type) {
   });
 }
 
-function createMenu(subjects_data, map_data) {
+function createTypeMenu(subjects_data, map_data) {
   var uniqueArray = _toConsumableArray(new Set(subjects_data.map(function (d) {
     return d.service_type;
   })));
@@ -28885,17 +28902,45 @@ function createMenu(subjects_data, map_data) {
   var menu_div = document.getElementById('menu');
   uniqueArray.forEach(function (d, i) {
     var option = document.createElement('div');
+    option.className = 'menu menu' + i;
     option.innerText = d;
+    if (i == 0) option.className = 'menu active menu' + i;
+    option.setAttribute('data-type', d);
+    option.setAttribute('data-type-id', i);
     var minimap = document.createElement('div');
     minimap.className = 'minimap' + i;
     option.appendChild(minimap);
 
     option.onclick = function () {
-      return updateMap(subjects_data, map_data, d);
+      d3.selectAll('.menu').classed("active", false);
+      d3.selectAll('.menu' + i).classed("active", true);
+      updateMap(subjects_data, map_data, d);
     };
 
     menu_div.appendChild(option);
     createMiniMap(subjects_data, map_data, d, i);
+  });
+  return uniqueArray[0];
+}
+
+function createTargetMenu(subjects_data, map_data) {
+  var uniqueArray = ["value_cost", "value_competition"];
+  var menu_div = document.getElementById('menuTarget');
+  uniqueArray.forEach(function (d, i) {
+    var option = document.createElement('div');
+    option.className = 'menuTarget menuTarget' + i;
+    option.innerText = d;
+    if (i == 0) option.className = 'menuTarget active menuTarget' + i;
+    option.setAttribute('data-target', d);
+    option.setAttribute('data-target-id', i);
+
+    option.onclick = function () {
+      d3.selectAll('.menuTarget').classed("active", false);
+      d3.selectAll('.menuTarget' + i).classed("active", true);
+      updateMap(subjects_data, map_data);
+    };
+
+    menu_div.appendChild(option);
   });
   return uniqueArray[0];
 }
@@ -28908,7 +28953,7 @@ function createMiniMap(subjects_data, map_data, service_type, i) {
     return +d[targetField];
   })); //Set up SVG
 
-  var svg = d3.select(".minimap" + i).append("svg").classed("minimap", true).attr("width", mini_w).attr("height", mini_h).attr("fill", "black"); // label boxes
+  var svg = d3.select(".minimap" + i).append("svg").classed("minimap", true).attr("width", mini_w).attr("height", mini_h); // label boxes
 
   var labelboxes = svg.selectAll("rect.boxes").data(map_data.map(function (d) {
     var tmp = subjects_data.find(function (e) {
@@ -28922,7 +28967,7 @@ function createMiniMap(subjects_data, map_data, service_type, i) {
       feature: d
     };
   })).enter().append("rect").style("fill", function (d) {
-    return getColor(+d.value, max);
+    return getColor(d.value, max);
   }).attr("class", "boxes").attr("width", mini_colscale(1)).attr("height", mini_rowscale(1)).attr("x", function (d) {
     return mini_colscale(+d.feature.col);
   }).attr("y", function (d) {
@@ -28933,7 +28978,8 @@ function createMiniMap(subjects_data, map_data, service_type, i) {
 d3.csv(_gridmap.default).then(function (map_data) {
   drawMap(map_data);
   d3.csv(_data.default).then(function (subjects_data) {
-    var defaultType = createMenu(subjects_data, map_data);
+    var defaultType = createTypeMenu(subjects_data, map_data);
+    var defaultTarget = createTargetMenu(subjects_data, map_data);
     var working_data;
     working_data = subjects_data.map(function (d) {
       return {
@@ -28941,7 +28987,7 @@ d3.csv(_gridmap.default).then(function (map_data) {
         value: d.value
       };
     });
-    updateMap(subjects_data, map_data, defaultType);
+    updateMap(subjects_data, map_data);
   });
 });
 },{"d3":"node_modules/d3/index.js","./gridmap.csv":"gridmap.csv","./data.csv":"data.csv"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
