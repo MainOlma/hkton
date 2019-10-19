@@ -1,0 +1,1 @@
+{"version":3,"sources":["style.scss"],"names":[],"mappings":"AAAA;EACE;;;AAGF;EACE;EACA;EACA","file":"style.97fcb138.css","sourceRoot":"..","sourcesContent":["body{\r\n  background: white;\r\n}\r\n\r\n.content{\r\n  display: flex;\r\n  flex-direction: row;\r\n  align-items: center;\r\n  #menu{\r\n\r\n  }\r\n  #root{\r\n\r\n  }\r\n}"]}
