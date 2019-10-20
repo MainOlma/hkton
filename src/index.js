@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import map from './gridmap.csv'
 import data from './data.csv'
 
-const w = 960, h = 550,
+const w = 798, h = 462,
     mini_w = 100, mini_h=50
 
 //scales
@@ -74,7 +74,6 @@ function drawMap(countryData) {
         .enter()
         .append("text")
         .attr("class", "label")
-        .attr("font-size", 16)
         .attr("text-anchor", "middle")
         .attr("fill", "black")
         .attr("x", d => {
@@ -157,12 +156,11 @@ function updateMap(subjects_data, map_data){
             }))
 
     rects.exit()
-        .attr("class", "exit sub")
+        //.attr("class", "exit sub")
         .transition(t)
         .remove();
 
-    rects.attr("class", "update sub")
-        .transition(t)
+    rects/*.attr("class", "update sub")*/.transition(t)
         .style("fill", (d) => {
             if (selectedField=="value_cost") return getColor(+d.value, max)
             else return getColorField(+d.value, max,min)
