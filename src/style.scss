@@ -8,6 +8,25 @@ body{
   flex-direction: row;
   .active{border: 1px solid red}
 }
+
+.header{
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  .name{
+    font-weight: bold;
+
+  }
+  a.logo{
+    display: flex;
+    flex-direction: row;
+    text-decoration: none;
+    color: inherit;
+  }
+
+}
+
 .content{
   display: flex;
   flex-direction: row;
@@ -15,6 +34,7 @@ body{
 
   #menu{
     .menu{
+      font-size: 20px;
       cursor: pointer;
     }
     .active{border: 1px solid red}

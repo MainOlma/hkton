@@ -28873,6 +28873,11 @@ function updateMap(subjects_data, map_data) {
   .transition(t).style("fill", function (d) {
     if (selectedField == "value_cost") return getColor(+d.value, max);else return getColorField(+d.value, max, min);
   });
+  rects.on("click", function (d) {
+    var link = 'https://github.com/MainOlma/hkton/blob/master/src/data-src/' + selectedField + '/' + service_type + ' - ' + d.feature.subject + '.csv';
+    var encodedLink = encodeURI(link);
+    window.open(encodedLink);
+  });
   var texts = mainSvg.selectAll("text.value").data(map_data.map(function (d) {
     var tmp = subjects_data.find(function (e) {
       return e.subject_rf == d.subject && e.service_type == service_type;

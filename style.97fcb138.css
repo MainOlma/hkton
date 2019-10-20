@@ -12,12 +12,29 @@ body {
   border: 1px solid red;
 }
 
+.header {
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.header .name {
+  font-weight: bold;
+}
+.header a.logo {
+  display: flex;
+  flex-direction: row;
+  text-decoration: none;
+  color: inherit;
+}
+
 .content {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 .content #menu .menu {
+  font-size: 20px;
   cursor: pointer;
 }
 .content #menu .active {

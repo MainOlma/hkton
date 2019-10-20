@@ -167,6 +167,12 @@ function updateMap(subjects_data, map_data){
             else return getColorField(+d.value, max,min)
         })
 
+    rects.on("click",(d)=>{
+        const link = 'https://github.com/MainOlma/hkton/blob/master/src/data-src/'+selectedField+'/'+service_type+' - '+d.feature.subject+'.csv'
+        const encodedLink = encodeURI(link)
+        window.open(encodedLink)
+    })
+
 
     const texts = mainSvg.selectAll("text.value")
         .data(map_data.map(d => {
