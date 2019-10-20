@@ -23,7 +23,6 @@ body{
   display: flex;
   flex-direction: row;
   border-bottom: 1px solid rgba(0,0,0,0.2);
-  align-items: center;
   margin-bottom: 24px;
   padding: 10px 32px 0 32px;
   .name{
@@ -81,7 +80,7 @@ body{
       font-size: 40px;
       line-height: 47px;
       font-weight: bold;
-      margin: 0;
+      margin: 0 0 10px 20px;
     }
     #root{
 
