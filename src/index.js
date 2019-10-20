@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import map from './gridmap.csv'
 import data from './data.csv'
 
-const w = 798, h = 462,
+const w = 840, h = 462,
     mini_w = 100, mini_h=50
 
 //scales
@@ -11,7 +11,7 @@ const rowscale = d3.scaleLinear()
     .range([0, h])
 
 const colscale = d3.scaleLinear()
-    .domain([0, 18])
+    .domain([0, 19])
     .range([0, w])
 
 const mini_rowscale = d3.scaleLinear()
@@ -51,9 +51,10 @@ function drawMap(countryData) {
 
     //Set up SVG
     const svg = d3.select("#root").append("svg").classed("mainChart",true)
-        .attr("width", w)
-        .attr("height", h)
-        .attr("fill", "black");
+        .attr("width", '80vw')
+        .attr("height", '100vh')
+        .attr("fill", "black")
+        .attr("viewBox",'0 0 ' + w + ' '+h)
 
 // label boxes
     const labelboxes = svg.selectAll("rect.boxes").data(countryData).enter().append("rect")
@@ -77,10 +78,10 @@ function drawMap(countryData) {
         .attr("text-anchor", "middle")
         .attr("fill", "black")
         .attr("x", d => {
-            if (d) return colscale(+d.col - 0.5+1)
+            if (d) return colscale(+d.col)+3
         })
         .attr("y", d => {
-            if (d) return rowscale(+d.row - 0.35+1);
+            if (d) return rowscale(+d.row+0.6);
         })
         .text(d => d.subject_short)
 
@@ -90,13 +91,13 @@ function drawMap(countryData) {
         .append("text")
         .attr("class", "value")
         .attr("font-size", 16)
-        .attr("text-anchor", "middle")
+        //.attr("text-anchor", "middle")
         .attr("fill", "black")
         .attr("x", d => {
-            if (d) return colscale(+d.col - 0.5+1)
+            if (d) return colscale(+d.col)+3
         })
         .attr("y", d => {
-            if (d) return rowscale(+d.row - 0.6+1);
+            if (d) return rowscale(+d.row +1)-3;
         })
         .text("0")
 
@@ -185,7 +186,7 @@ function updateMap(subjects_data, map_data){
         .attr("class", "exit sub")
         .transition(t)
         .remove();*/
-    const f = d3.format(".1f");
+    const f = d3.format(".0f");
     texts.style("opacity",0).transition(t2).style("opacity",1)
         .text(d => {
             //console.log(d)
