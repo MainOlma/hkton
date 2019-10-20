@@ -28793,6 +28793,8 @@ function drawMap(countryData) {
     return colscale(+d.col);
   }).attr("y", function (d) {
     return rowscale(+d.row);
+  }).append("title").text(function (d) {
+    return d.subject;
   }); // Labels
 
   var labels = svg.selectAll("text.label").data(countryData).enter().append("text").attr("class", "label").attr("text-anchor", "middle").attr("fill", "black").attr("x", function (d) {
@@ -28801,8 +28803,6 @@ function drawMap(countryData) {
     if (d) return rowscale(+d.row + 0.6);
   }).text(function (d) {
     return d.subject_short;
-  }).append("title").text(function (d) {
-    return d.subject;
   });
   var values = svg.selectAll("text.value").data(countryData).enter().append("text").attr("class", "value").attr("font-size", 16) //.attr("text-anchor", "middle")
   .attr("fill", "black").attr("x", function (d) {

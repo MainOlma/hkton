@@ -69,7 +69,9 @@ function drawMap(countryData) {
         })
         .attr("y", d => {
             return rowscale(+d.row);
-        });
+        })
+        .append("title")
+        .text( d => d.subject)
 
     // Labels
     const labels = svg.selectAll("text.label")
@@ -86,8 +88,7 @@ function drawMap(countryData) {
             if (d) return rowscale(+d.row+0.6);
         })
         .text(d => d.subject_short)
-        .append("title")
-        .text( d => d.subject)
+
 
     const values = svg.selectAll("text.value")
         .data(countryData)
