@@ -29,7 +29,6 @@ function getColor(value, max){
     const color = d3.scaleSequential(d3.interpolateGreens)
         .domain([0, max]);
     value = (Number.isNaN(value)) ?  0 : value
-    debugger
     return color(value)
 }
 
@@ -41,7 +40,7 @@ function getColorField(value, max,min){
         .domain([min, 0, max])
         .range(["red", "white", "green"])
         .clamp(true)
-        .interpolate(d3.interpolateHcl);
+        //.interpolate(d3.interpolateHcl);
 
     value = (Number.isNaN(value)) ?  0 : value
 
@@ -129,8 +128,8 @@ function drawMap(countryData) {
 function updateMap(subjects_data, map_data){
 
     const selectedType = d3.select('.menu.active').attr("data-type")
-
     const selectedField = d3.select('.menuTarget.active').attr("data-target")
+
     const targetField = selectedField
     const t = d3.transition()
         .duration(750);
@@ -148,7 +147,6 @@ function updateMap(subjects_data, map_data){
     const rects = mainSvg.selectAll("rect")
         .data(map_data.map(d => {
                 let tmp = subjects_data.find(e => e.subject_rf == d.subject && e.service_type==service_type)
-
                 if (!tmp) tmp={}
             return {
                     subject:tmp.subject_rf,
@@ -176,6 +174,7 @@ function updateMap(subjects_data, map_data){
             let tmp = subjects_data.find(e => e.subject_rf == d.subject && e.service_type==service_type)
 
             if (!tmp) tmp={}
+
             return {
                 subject:tmp.subject_rf,
                 value: +tmp[targetField],
@@ -191,9 +190,11 @@ function updateMap(subjects_data, map_data){
     const f = d3.format(".1f");
     texts.style("opacity",0).transition(t2).style("opacity",1)
         .text(d => {
+            //console.log(d)
             let context
-            if (d.value) context = f(d.value)
+            if (!Number.isNaN(d.value)) context = f(d.value)
             else context = ""
+
             return context
         })
 
@@ -218,7 +219,8 @@ function createTypeMenu(subjects_data,map_data){
             d3.selectAll('.menu'+i).classed("active",true)
             updateMap(subjects_data,map_data, d)}
         menu_div.appendChild(option)
-        createMiniMap(subjects_data,map_data,d, i)
+        createMiniMap(subjects_data,map_data,d, i,'value_cost')
+        createMiniMap(subjects_data,map_data,d, i,'value_competition')
     })
     return uniqueArray[0]
 }
@@ -237,22 +239,30 @@ function createTargetMenu(subjects_data,map_data){
         option.onclick=()=> {
             d3.selectAll('.menuTarget').classed("active",false)
             d3.selectAll('.menuTarget'+i).classed("active",true)
-            updateMap(subjects_data,map_data)}
+            d3.selectAll('svg.minimap').classed('hidden',true)
+            d3.selectAll('svg.minimap.'+d).classed('hidden',false)
+
+            updateMap(subjects_data,map_data)
+
+        }
         menu_div.appendChild(option)
 
     })
     return uniqueArray[0]
 }
 
-function createMiniMap(subjects_data,map_data,service_type,i){
-    const targetField = 'value_cost'
+function createMiniMap(subjects_data,map_data,service_type,i,selectedTargetField){
+    const targetField = selectedTargetField
     const max = d3.max(subjects_data.filter(d=>d.service_type==service_type).map(d=>+d[targetField]))
-    //Set up SVG
-    const svg = d3.select(".minimap"+i).append("svg").classed("minimap",true)
+    const min = d3.min(subjects_data.filter(d=>d.service_type==service_type).map(d=>+d[targetField]))
+
+    const svg = d3.select(".minimap"+i).append("svg").classed("minimap "+targetField,true)
         .attr("width", mini_w)
         .attr("height", mini_h)
+        .attr("id",i)
 
-// label boxes
+    if(targetField=="value_competition") svg.classed('hidden',true)
+
     const labelboxes = svg.selectAll("rect.boxes")
         .data(map_data.map(d => {
             let tmp = subjects_data.find(e => e.subject_rf == d.subject && e.service_type==service_type)
@@ -267,7 +277,10 @@ function createMiniMap(subjects_data,map_data,service_type,i){
             }
         }))
         .enter().append("rect")
-        .style("fill", (d) => getColor(d.value, max))
+        .style("fill", ((d) => {
+            if (targetField=="value_cost") return getColor(+d.value, max)
+            else return getColorField(+d.value, max,min)
+        }))
         .attr("class", "boxes")
         .attr("width", mini_colscale(1))
         .attr("height", mini_rowscale(1))
@@ -278,8 +291,17 @@ function createMiniMap(subjects_data,map_data,service_type,i){
             return mini_rowscale(+d.feature.row);
         });
 
-
 }
+
+function updateMiniMaps(){
+    let svgs=d3.selectAll(".menu svg")
+    svgs.nodes().forEach((svg)=>{
+        console.log(svg.id, d3.select(svg).attr("id"))
+
+    })
+}
+
+
 
 
 d3.csv(map).then(map_data=>{

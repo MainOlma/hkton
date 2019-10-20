@@ -1,5 +1,7 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap");
 body {
   background: white;
+  font-family: "Roboto", sans-serif;
 }
 
 #menuTarget {
@@ -20,6 +22,9 @@ body {
 }
 .content #menu .active {
   border: 1px solid red;
+}
+.minimap.hidden {
+  display: none;
 }
 
 /*# sourceMappingURL=/style.97fcb138.css.map */

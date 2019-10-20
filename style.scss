@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
 body{
   background: white;
+  font-family: 'Roboto', sans-serif;
 }
 #menuTarget{
   display: flex;
@@ -20,5 +22,11 @@ body{
   }
   #root{
 
+  }
+}
+
+.minimap{
+  &.hidden{
+    display: none;
   }
 }

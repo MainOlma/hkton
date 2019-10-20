@@ -28772,14 +28772,14 @@ var color = d3.scaleSequential(d3.interpolateGreens).domain([0, 2000]);
 function getColor(value, max) {
   var color = d3.scaleSequential(d3.interpolateGreens).domain([0, max]);
   value = Number.isNaN(value) ? 0 : value;
-  debugger;
   return color(value);
 }
 
 function getColorField(value, max, min) {
   /*const color = d3.scaleSequential(d3.interpolateGreens)
       .domain([0, max]);*/
-  var color = d3.scaleLinear().domain([min, 0, max]).range(["red", "white", "green"]).clamp(true).interpolate(d3.interpolateHcl);
+  var color = d3.scaleLinear().domain([min, 0, max]).range(["red", "white", "green"]).clamp(true); //.interpolate(d3.interpolateHcl);
+
   value = Number.isNaN(value) ? 0 : value;
   return color(value);
 }
@@ -28888,8 +28888,9 @@ function updateMap(subjects_data, map_data) {
 
   var f = d3.format(".1f");
   texts.style("opacity", 0).transition(t2).style("opacity", 1).text(function (d) {
+    //console.log(d)
     var context;
-    if (d.value) context = f(d.value);else context = "";
+    if (!Number.isNaN(d.value)) context = f(d.value);else context = "";
     return context;
   });
 }
@@ -28918,7 +28919,8 @@ function createTypeMenu(subjects_data, map_data) {
     };
 
     menu_div.appendChild(option);
-    createMiniMap(subjects_data, map_data, d, i);
+    createMiniMap(subjects_data, map_data, d, i, 'value_cost');
+    createMiniMap(subjects_data, map_data, d, i, 'value_competition');
   });
   return uniqueArray[0];
 }
@@ -28937,6 +28939,8 @@ function createTargetMenu(subjects_data, map_data) {
     option.onclick = function () {
       d3.selectAll('.menuTarget').classed("active", false);
       d3.selectAll('.menuTarget' + i).classed("active", true);
+      d3.selectAll('svg.minimap').classed('hidden', true);
+      d3.selectAll('svg.minimap.' + d).classed('hidden', false);
       updateMap(subjects_data, map_data);
     };
 
@@ -28945,16 +28949,20 @@ function createTargetMenu(subjects_data, map_data) {
   return uniqueArray[0];
 }
 
-function createMiniMap(subjects_data, map_data, service_type, i) {
-  var targetField = 'value_cost';
+function createMiniMap(subjects_data, map_data, service_type, i, selectedTargetField) {
+  var targetField = selectedTargetField;
   var max = d3.max(subjects_data.filter(function (d) {
     return d.service_type == service_type;
   }).map(function (d) {
     return +d[targetField];
-  })); //Set up SVG
-
-  var svg = d3.select(".minimap" + i).append("svg").classed("minimap", true).attr("width", mini_w).attr("height", mini_h); // label boxes
-
+  }));
+  var min = d3.min(subjects_data.filter(function (d) {
+    return d.service_type == service_type;
+  }).map(function (d) {
+    return +d[targetField];
+  }));
+  var svg = d3.select(".minimap" + i).append("svg").classed("minimap " + targetField, true).attr("width", mini_w).attr("height", mini_h).attr("id", i);
+  if (targetField == "value_competition") svg.classed('hidden', true);
   var labelboxes = svg.selectAll("rect.boxes").data(map_data.map(function (d) {
     var tmp = subjects_data.find(function (e) {
       return e.subject_rf == d.subject && e.service_type == service_type;
@@ -28967,11 +28975,18 @@ function createMiniMap(subjects_data, map_data, service_type, i) {
       feature: d
     };
   })).enter().append("rect").style("fill", function (d) {
-    return getColor(d.value, max);
+    if (targetField == "value_cost") return getColor(+d.value, max);else return getColorField(+d.value, max, min);
   }).attr("class", "boxes").attr("width", mini_colscale(1)).attr("height", mini_rowscale(1)).attr("x", function (d) {
     return mini_colscale(+d.feature.col);
   }).attr("y", function (d) {
     return mini_rowscale(+d.feature.row);
+  });
+}
+
+function updateMiniMaps() {
+  var svgs = d3.selectAll(".menu svg");
+  svgs.nodes().forEach(function (svg) {
+    console.log(svg.id, d3.select(svg).attr("id"));
   });
 }
 
