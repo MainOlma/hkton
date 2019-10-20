@@ -206,7 +206,7 @@ function updateMap(subjects_data, map_data){
         .text(d => {
             //console.log(d)
             let context
-            if (!Number.isNaN(d.value)) context = f(d.value)
+            if (!Number.isNaN(d.value) && d.value!='') context = f(d.value)
             else context = "—"
 
             return context
