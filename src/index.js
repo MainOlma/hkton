@@ -38,7 +38,7 @@ function getColorField(value, max,min){
 
     let color = d3.scaleLinear()
         .domain([min, 0, max])
-        .range(["red", "white", "green"])
+        .range(["#FF7373", "white", "green"])
         .clamp(true)
         //.interpolate(d3.interpolateHcl);
 
@@ -51,8 +51,8 @@ function drawMap(countryData) {
 
     //Set up SVG
     const svg = d3.select("#root").append("svg").classed("mainChart",true)
-        .attr("width", '80vw')
-        .attr("height", '100vh')
+        .attr("width", '70vw')
+        //.attr("height", '100vh')
         .attr("fill", "black")
         .attr("viewBox",'0 0 ' + w + ' '+h)
 
@@ -84,6 +84,8 @@ function drawMap(countryData) {
             if (d) return rowscale(+d.row+0.6);
         })
         .text(d => d.subject_short)
+        .append("title")
+        .text( d => d.subject)
 
     const values = svg.selectAll("text.value")
         .data(countryData)
@@ -129,6 +131,9 @@ function updateMap(subjects_data, map_data){
 
     const selectedType = d3.select('.menu.active').attr("data-type")
     const selectedField = d3.select('.menuTarget.active').attr("data-target")
+    const selectedFieldText = (selectedField=="value_cost") ? "Стоимость" : "Конкуренция"
+
+    d3.select('.wrap h1').text(selectedFieldText +' → ' + selectedType )
 
     const targetField = selectedField
     const t = d3.transition()
@@ -168,6 +173,7 @@ function updateMap(subjects_data, map_data){
         })
 
     rects.on("click",(d)=>{
+                      //https://github.com/MainOlma/hkton/blob/master/src/data-src/
         const link = 'https://github.com/MainOlma/hkton/blob/master/src/data-src/'+selectedField+'/'+service_type+' - '+d.feature.subject+'.csv'
         const encodedLink = encodeURI(link)
         window.open(encodedLink)
@@ -237,7 +243,8 @@ function createTargetMenu(subjects_data,map_data){
     uniqueArray.forEach((d,i)=>{
         let option = document.createElement('div');
         option.className='menuTarget menuTarget'+i
-        option.innerText=d
+        const fieldText = (d=="value_cost") ? "Стоимость" : "Конкуренция"
+        option.innerText=fieldText
         if  (i==0) option.className='menuTarget active menuTarget'+i
         option.setAttribute('data-target',d)
         option.setAttribute('data-target-id',i)

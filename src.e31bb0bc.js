@@ -28778,7 +28778,7 @@ function getColor(value, max) {
 function getColorField(value, max, min) {
   /*const color = d3.scaleSequential(d3.interpolateGreens)
       .domain([0, max]);*/
-  var color = d3.scaleLinear().domain([min, 0, max]).range(["red", "white", "green"]).clamp(true); //.interpolate(d3.interpolateHcl);
+  var color = d3.scaleLinear().domain([min, 0, max]).range(["#FF7373", "white", "green"]).clamp(true); //.interpolate(d3.interpolateHcl);
 
   value = Number.isNaN(value) ? 0 : value;
   return color(value);
@@ -28786,7 +28786,8 @@ function getColorField(value, max, min) {
 
 function drawMap(countryData) {
   //Set up SVG
-  var svg = d3.select("#root").append("svg").classed("mainChart", true).attr("width", '80vw').attr("height", '100vh').attr("fill", "black").attr("viewBox", '0 0 ' + w + ' ' + h); // label boxes
+  var svg = d3.select("#root").append("svg").classed("mainChart", true).attr("width", '70vw') //.attr("height", '100vh')
+  .attr("fill", "black").attr("viewBox", '0 0 ' + w + ' ' + h); // label boxes
 
   var labelboxes = svg.selectAll("rect.boxes").data(countryData).enter().append("rect").attr("fill", "rgba(0,0,0,0)").attr("class", "boxes").attr("width", colscale(1)).attr("height", rowscale(1)).attr("x", function (d) {
     return colscale(+d.col);
@@ -28800,6 +28801,8 @@ function drawMap(countryData) {
     if (d) return rowscale(+d.row + 0.6);
   }).text(function (d) {
     return d.subject_short;
+  }).append("title").text(function (d) {
+    return d.subject;
   });
   var values = svg.selectAll("text.value").data(countryData).enter().append("text").attr("class", "value").attr("font-size", 16) //.attr("text-anchor", "middle")
   .attr("fill", "black").attr("x", function (d) {
@@ -28831,6 +28834,8 @@ function drawMap(countryData) {
 function updateMap(subjects_data, map_data) {
   var selectedType = d3.select('.menu.active').attr("data-type");
   var selectedField = d3.select('.menuTarget.active').attr("data-target");
+  var selectedFieldText = selectedField == "value_cost" ? "Стоимость" : "Конкуренция";
+  d3.select('.wrap h1').text(selectedFieldText + ' → ' + selectedType);
   var targetField = selectedField;
   var t = d3.transition().duration(750);
   var t2 = d3.transition().duration(750 / 2);
@@ -28874,6 +28879,7 @@ function updateMap(subjects_data, map_data) {
     if (selectedField == "value_cost") return getColor(+d.value, max);else return getColorField(+d.value, max, min);
   });
   rects.on("click", function (d) {
+    //https://github.com/MainOlma/hkton/blob/master/src/data-src/
     var link = 'https://github.com/MainOlma/hkton/blob/master/src/data-src/' + selectedField + '/' + service_type + ' - ' + d.feature.subject + '.csv';
     var encodedLink = encodeURI(link);
     window.open(encodedLink);
@@ -28940,7 +28946,8 @@ function createTargetMenu(subjects_data, map_data) {
   uniqueArray.forEach(function (d, i) {
     var option = document.createElement('div');
     option.className = 'menuTarget menuTarget' + i;
-    option.innerText = d;
+    var fieldText = d == "value_cost" ? "Стоимость" : "Конкуренция";
+    option.innerText = fieldText;
     if (i == 0) option.className = 'menuTarget active menuTarget' + i;
     option.setAttribute('data-target', d);
     option.setAttribute('data-target-id', i);
