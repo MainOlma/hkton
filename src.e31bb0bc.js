@@ -28758,13 +28758,13 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-var w = 798,
+var w = 840,
     h = 462,
     mini_w = 100,
     mini_h = 50; //scales
 
 var rowscale = d3.scaleLinear().domain([0, 10]).range([0, h]);
-var colscale = d3.scaleLinear().domain([0, 18]).range([0, w]);
+var colscale = d3.scaleLinear().domain([0, 19]).range([0, w]);
 var mini_rowscale = d3.scaleLinear().domain([0, 10]).range([0, mini_h]);
 var mini_colscale = d3.scaleLinear().domain([0, 18]).range([0, mini_w]);
 var color = d3.scaleSequential(d3.interpolateGreens).domain([0, 2000]);
@@ -28786,7 +28786,7 @@ function getColorField(value, max, min) {
 
 function drawMap(countryData) {
   //Set up SVG
-  var svg = d3.select("#root").append("svg").classed("mainChart", true).attr("width", w).attr("height", h).attr("fill", "black"); // label boxes
+  var svg = d3.select("#root").append("svg").classed("mainChart", true).attr("width", '80vw').attr("height", '100vh').attr("fill", "black").attr("viewBox", '0 0 ' + w + ' ' + h); // label boxes
 
   var labelboxes = svg.selectAll("rect.boxes").data(countryData).enter().append("rect").attr("fill", "rgba(0,0,0,0)").attr("class", "boxes").attr("width", colscale(1)).attr("height", rowscale(1)).attr("x", function (d) {
     return colscale(+d.col);
@@ -28795,16 +28795,17 @@ function drawMap(countryData) {
   }); // Labels
 
   var labels = svg.selectAll("text.label").data(countryData).enter().append("text").attr("class", "label").attr("text-anchor", "middle").attr("fill", "black").attr("x", function (d) {
-    if (d) return colscale(+d.col - 0.5 + 1);
+    if (d) return colscale(+d.col) + 3;
   }).attr("y", function (d) {
-    if (d) return rowscale(+d.row - 0.35 + 1);
+    if (d) return rowscale(+d.row + 0.6);
   }).text(function (d) {
     return d.subject_short;
   });
-  var values = svg.selectAll("text.value").data(countryData).enter().append("text").attr("class", "value").attr("font-size", 16).attr("text-anchor", "middle").attr("fill", "black").attr("x", function (d) {
-    if (d) return colscale(+d.col - 0.5 + 1);
+  var values = svg.selectAll("text.value").data(countryData).enter().append("text").attr("class", "value").attr("font-size", 16) //.attr("text-anchor", "middle")
+  .attr("fill", "black").attr("x", function (d) {
+    if (d) return colscale(+d.col) + 3;
   }).attr("y", function (d) {
-    if (d) return rowscale(+d.row - 0.6 + 1);
+    if (d) return rowscale(+d.row + 1) - 3;
   }).text("0");
   /*labelboxes.on("mouseover", function (d) {
       focus = d.CountryCode
@@ -28889,7 +28890,7 @@ function updateMap(subjects_data, map_data) {
        .transition(t)
        .remove();*/
 
-  var f = d3.format(".1f");
+  var f = d3.format(".0f");
   texts.style("opacity", 0).transition(t2).style("opacity", 1).text(function (d) {
     //console.log(d)
     var context;

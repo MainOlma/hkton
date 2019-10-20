@@ -27,11 +27,19 @@ body {
   display: none;
 }
 
+.mainChart .boxes {
+  cursor: pointer;
+}
 .mainChart text.label {
-  font-size: 16px;
+  font-size: 12px;
+  pointer-events: none;
+  text-anchor: start;
 }
 .mainChart text.value {
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  pointer-events: none;
+  text-anchor: start;
 }
 
 /*# sourceMappingURL=/style.97fcb138.css.map */
