@@ -27,7 +27,7 @@ const color = d3.scaleSequential(d3.interpolateGreens)
 
 function getColor(value, max){
     const color = d3.scaleSequential(d3.interpolateGreens)
-        .domain([0, max]);
+        .domain([-max*0.5, max*1.5]);
     value = (Number.isNaN(value)) ?  0 : value
     return color(value)
 }
@@ -37,8 +37,10 @@ function getColorField(value, max,min){
         .domain([0, max]);*/
 
     let color = d3.scaleLinear()
-        .domain([min, 0, max])
-        .range(["#FF7373", "white", "green"])
+        .domain([-10, 0, 10])
+        .range(['#ff7373',
+            '#5e9cfa',
+            '#ff7373'])
         .clamp(true)
         //.interpolate(d3.interpolateHcl);
 
@@ -204,7 +206,7 @@ function updateMap(subjects_data, map_data){
             //console.log(d)
             let context
             if (!Number.isNaN(d.value)) context = f(d.value)
-            else context = ""
+            else context = "—"
 
             return context
         })
@@ -311,6 +313,34 @@ function updateMiniMaps(){
         console.log(svg.id, d3.select(svg).attr("id"))
 
     })
+}
+
+function invertColor(hex, bw) {
+    if (hex.indexOf('#') === 0) {
+        hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+    }
+    var r = parseInt(hex.slice(0, 2), 16),
+        g = parseInt(hex.slice(2, 4), 16),
+        b = parseInt(hex.slice(4, 6), 16);
+    if (bw) {
+        // http://stackoverflow.com/a/3943023/112731
+        return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+            ? '#000000'
+            : '#FFFFFF';
+    }
+    // invert color components
+    r = (255 - r).toString(16);
+    g = (255 - g).toString(16);
+    b = (255 - b).toString(16);
+    // pad each with zeros and return
+    return "#" + padZero(r) + padZero(g) + padZero(b);
 }
 
 

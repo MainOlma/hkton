@@ -79,6 +79,14 @@ body {
   font-weight: bold;
   margin: 0;
 }
+.content .wrap .notes {
+  font-size: 20px;
+  line-height: 120%;
+}
+.content .wrap .notes h2 {
+  margin: 0 0 0.5em 0;
+}
+
 .minimap.hidden {
   display: none;
 }
@@ -100,6 +108,7 @@ body {
 
 .footer {
   padding: 24px 32px;
+  font-size: 20px;
 }
 .footer a {
   border-bottom: 1px solid black;
