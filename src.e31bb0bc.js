@@ -28760,8 +28760,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var w = 840,
     h = 462,
-    mini_w = 100,
-    mini_h = 50; //scales
+    mini_w = 160,
+    mini_h = 80; //scales
 
 var rowscale = d3.scaleLinear().domain([0, 10]).range([0, h]);
 var colscale = d3.scaleLinear().domain([0, 19]).range([0, w]);
@@ -29080,7 +29080,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57903" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49314" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

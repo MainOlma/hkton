@@ -3,7 +3,7 @@ import map from './gridmap.csv'
 import data from './data.csv'
 
 const w = 840, h = 462,
-    mini_w = 100, mini_h=50
+    mini_w = 160, mini_h=80
 
 //scales
 const rowscale = d3.scaleLinear()
